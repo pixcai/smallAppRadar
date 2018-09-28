@@ -30,10 +30,12 @@ let datas = [{
   lineColor: 'rgba(0,0,255,1)',
   fillColor: 'rgba(0,0,255,.2)',
   lineWidth: 1,
-  value: [5, 2, 6, 2, 6, 4, 3]
+  legend: '图一',
+  value: [5, 2.5, 6, 2, 6, 4.5, 3]
 }, {
   lineWidth: 2,
-  value: [3, 6, 2, 5, 1, 2, 6]
+  legend: '图二',
+  value: [3, 6, 2, 5, 1.5, 2, 6]
 }];
 
 let context = null;
@@ -105,27 +107,39 @@ let radar = {
     context.stroke();
     for (let i = 0; i < datas.length; i++) {
       const cfg = datas[i];
-      const lineColor = cfg.lineColor ? cfg.lineColor : randRgba();
-      const fillColor = cfg.fillColor ? cfg.fillColor : randRgba();
+      const randA = randRgba();
+      const lineColor = cfg.lineColor ? cfg.lineColor : randA(1);
+      const fillColor = cfg.fillColor ? cfg.fillColor : randA(.5);
       const lineWidth = typeof cfg.lineWidth === 'number' ? cfg.lineWidth : 1;
       let isFirstPoint = true;
       let tmpPoints = [];
+      let circles = [];
 
+      context.setLineWidth(lineWidth);
       context.setStrokeStyle(lineColor);
       context.setFillStyle(fillColor);
-      context.setLineWidth(lineWidth);
-      // 绘制比例
       context.beginPath();
+      // 绘制比例
       for (m = 0; m < angleNum; m++) {
+        const val = cfg.value[m];
+
         tmpPoints = centerPoint;
-        if (cfg.value[m] > 0) {
+        if (val > 0) {
           for (n = 0; n < layerNum; n++) {
-            if (cfg.value[m] == (n + 1)) {
-              tmpPoints = layerPoints[n][m];
+            const p1 = layerPoints[n][m];
+            if (val === n + 1) {
+              tmpPoints = p1;
+              break;
+            } else if ((val > (n + 1)) && val < (n + 2)) {
+              const p2 = layerPoints[n + 1][m];
+              const dx = (p2[0] - p1[0]) * (val - n - 1);
+              const dy = (p2[1] - p1[1]) * (val - n - 1);
+              tmpPoints = [p1[0] + dx, p1[1] + dy];
               break;
             }
           }
         }
+        circles.push(tmpPoints.slice());
         if (isFirstPoint) {
           context.moveTo(tmpPoints[0], tmpPoints[1]);
           isFirstPoint = false;
@@ -135,25 +149,15 @@ let radar = {
       }
       context.closePath();
       context.stroke();
-      context.fill()
-
-      context.setFillStyle(lineColor);
+      context.fill();
       // 绘制圆点
-      for (m = 0; m < angleNum; m++) {
-        tmpPoints = centerPoint;
-        if (cfg.value[m] > 0) {
-          for (n = 0; n < layerNum; n++) {
-            if (cfg.value[m] == (n + 1)) {
-              tmpPoints = layerPoints[n][m];
-              break;
-            }
-          }
-        }
+      context.setFillStyle(lineColor);
+      circles.forEach(function (circle) {
         context.beginPath();
-        context.arc(tmpPoints[0], tmpPoints[1], circleWidth, 0, 2 * Math.PI, false);
+        context.arc(circle[0], circle[1], circleWidth, 0, 2 * Math.PI, false);
         context.closePath();
         context.fill();
-      }
+      });
     }
 
     wx.drawCanvas({
@@ -174,13 +178,15 @@ let rpx = (param) => {
   return Number((windowWidth / 750 * param).toFixed(2));
 };
 
-let randRgba = (alpha) => {
-  const r = Math.round(Math.random() * 255);
-  const g = Math.round(Math.random() * 255);
-  const b = Math.round(Math.random() * 255);
-  const a = typeof alpha === 'number' ? alpha : Math.random();
+let randRgba = (_r=255, _g=255, _b=255) => {
+  const r = Math.round(Math.random() * _r);
+  const g = Math.round(Math.random() * _g);
+  const b = Math.round(Math.random() * _b);
 
-  return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
+  return (alpha) => {
+    const a = typeof alpha === 'number' ? alpha : Math.random();
+    return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
+  };
 };
 
 let getXParam = (angle) => {
