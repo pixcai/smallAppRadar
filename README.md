@@ -8,5 +8,5 @@
 4. 图形样式可配置
 
 ## 预览
-[预览](screenshot-1.png)
-[图例](screenshot-2.png)
+![](screenshot-1.png)
+![](screenshot-2.png)
