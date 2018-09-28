@@ -17,7 +17,6 @@ Page({
     })
   },
   onLoad: function () {
-    console.log('onLoad')
     var that = this
     //调用应用实例的方法获取全局数据
     app.getUserInfo(function(userInfo){
@@ -26,6 +25,6 @@ Page({
         userInfo:userInfo
       })
     });
-    this.radar.draw('data = 11');
+    this.radar.draw();
   }
 })

@@ -18,7 +18,7 @@ let wordOffset = [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]];
 let circleWidth = 0; // 圆点宽度
 
 // 绘制的雷达比例数据
-let dataArr = [5, 2, 6, 2, 6, 0, 3];
+let dataArr = [5, 2, 6, 2, 6, 4, 3];
 
 let context =null;
 let windowWidth = 0;
