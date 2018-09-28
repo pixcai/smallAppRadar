@@ -27,13 +27,14 @@ let circleWidth = 0; // 圆点宽度
 
 // 绘制的雷达比例数据
 let datas = [{
-  lineColor: 'rgba(0,0,255,1)',
-  fillColor: 'rgba(0,0,255,.2)',
-  lineWidth: 1,
+  // lineColor: 'rgba(0,0,255,1)',
+  // fillColor: 'rgba(0,0,255,.2)',
+  lineWidth: 2,
   legend: '图一',
   value: [5, 2.5, 6, 2, 6, 4.5, 3]
 }, {
   lineWidth: 2,
+  fillColor: 'transparent',
   legend: '图二',
   value: [3, 6, 2, 5, 1.5, 2, 6]
 }];
@@ -158,6 +159,19 @@ let radar = {
         context.closePath();
         context.fill();
       });
+      // 绘制图例
+      if (cfg.legend) {
+        const fontWidth = fontSize * cfg.legend.length;
+        const start = centerPoint[0] - (fontWidth + 20) / 2;
+        const y = centerPoint[1] + (layerPoints[1][0][1] - layerPoints[0][0][1]) * layerNum + fontSize * (3 + i * 1.5);
+
+        context.beginPath();
+        context.moveTo(start, y);
+        context.lineTo(start + 20, y);
+        context.closePath();
+        context.stroke();
+        context.fillText(cfg.legend, start + 24, y + fontSize / 3);
+      }
     }
 
     wx.drawCanvas({
